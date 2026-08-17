@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>自分を後回しにしてしまう「選び方の癖」がわかる無料診断</title>
+<style>
+  :root{
+    --bg1:#1b1436; --bg2:#2a1f52; --bg3:#3a2b6b;
+    --gold:#e7c66b; --gold-soft:#f3e2ad;
+    --ink:#f6f2ff; --ink-dim:#c9bfe6;
+    --card:rgba(255,255,255,.06);
+    --card-line:rgba(231,198,107,.28);
+    --sel:#7b5fd0;
+    --sel-line:#e7c66b;
+    --danger:#ffb4b4;
+    --radius:18px;
+    --maxw:640px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(123,95,208,.35), transparent 60%),
+      radial-gradient(900px 500px at 80% 10%, rgba(231,198,107,.10), transparent 55%),
+      linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+    background-attachment:fixed;
+    min-height:100dvh;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.7;}
+  .stars i{position:absolute;background:#fff;border-radius:50%;opacity:.0;animation:tw 4s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.15;}50%{opacity:.9;}}
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:24px 20px 64px;}
+  .screen{display:none;animation:fade .4s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  h1,h2{font-weight:700;letter-spacing:.02em;}
+  .lead{
+    font-size:1.06rem;color:var(--ink);
+    text-align:center;
+    white-space:pre-line;
+    margin:8px 0 4px;
+  }
+  .sub{color:var(--ink-dim);text-align:center;font-size:.92rem;}
+
+  .glass{
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:var(--radius);
+    padding:22px 18px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 8px 30px rgba(0,0,0,.25);
+  }
+
+  /* top */
+  .top-emblem{
+    width:74px;height:74px;margin:6px auto 14px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 55%, #b8963f);
+    box-shadow:0 0 30px rgba(231,198,107,.5), inset 0 0 20px rgba(255,255,255,.4);
+    display:flex;align-items:center;justify-content:center;font-size:34px;
+  }
+  .title-main{
+    text-align:center;font-size:1.18rem;line-height:1.6;margin:2px 0 18px;
+    color:var(--gold-soft);
+  }
+
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:1.02rem;
+    padding:16px 18px;border-radius:999px;
+    background:linear-gradient(135deg, var(--gold) 0%, #d9b455 100%);
+    color:#3a2a08;
+    box-shadow:0 6px 20px rgba(231,198,107,.35);
+    transition:transform .08s ease, box-shadow .2s ease, opacity .2s;
+    margin-top:20px;
+  }
+  .btn:active{transform:translateY(1px) scale(.995);}
+  .btn:disabled{opacity:.55;cursor:default;box-shadow:none;}
+  .btn.ghost{
+    background:transparent;color:var(--gold-soft);
+    border:1px solid var(--card-line);box-shadow:none;
+  }
+  .btn.line{
+    background:linear-gradient(135deg,#06C755,#04a648);color:#fff;
+    box-shadow:0 6px 20px rgba(6,199,85,.35);
+  }
+
+  /* name */
+  label.field{display:block;margin-top:14px;font-size:.95rem;color:var(--gold-soft);}
+  input[type=text]{
+    width:100%;margin-top:8px;padding:14px 16px;border-radius:14px;
+    border:1px solid var(--card-line);background:rgba(255,255,255,.08);
+    color:var(--ink);font-size:1.05rem;font-family:inherit;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--sel-line);}
+  .note{font-size:.85rem;color:var(--ink-dim);margin-top:6px;}
+
+  /* progress */
+  .prog-wrap{position:sticky;top:0;z-index:5;padding:10px 0 8px;
+    background:linear-gradient(180deg, rgba(27,20,54,.95), rgba(27,20,54,.75) 70%, transparent);
+    margin:-8px -20px 12px;padding-left:20px;padding-right:20px;
+    backdrop-filter:blur(4px);
+  }
+  .prog-txt{font-size:.82rem;color:var(--ink-dim);text-align:center;margin-bottom:6px;}
+  .prog-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;}
+  .prog-fill{height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--gold),#fff2c8);transition:width .3s ease;}
+
+  /* question */
+  .q-num{font-size:.82rem;color:var(--gold);letter-spacing:.08em;font-weight:700;}
+  .q-text{font-size:1.08rem;font-weight:700;margin:6px 0 16px;line-height:1.6;}
+  .opt{
+    display:block;width:100%;text-align:left;cursor:pointer;
+    border:1px solid var(--card-line);border-radius:14px;
+    background:rgba(255,255,255,.05);color:var(--ink);
+    font-family:inherit;font-size:.98rem;line-height:1.6;
+    padding:14px 16px;margin-bottom:11px;
+    transition:border-color .15s, background .15s, transform .08s;
+  }
+  .opt:active{transform:scale(.995);}
+  .opt.sel{
+    border-color:var(--sel-line);
+    background:linear-gradient(135deg, rgba(231,198,107,.22), rgba(123,95,208,.22));
+    box-shadow:0 0 0 1px var(--sel-line) inset;
+  }
+  .opt .mark{
+    display:inline-block;width:22px;height:22px;border-radius:50%;
+    border:1px solid var(--card-line);margin-right:10px;vertical-align:-4px;
+    position:relative;flex:0 0 auto;
+  }
+  .opt.sel .mark{border-color:var(--sel-line);background:var(--gold);}
+  .opt.sel .mark::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#3a2a08;}
+
+  textarea{
+    width:100%;margin-top:10px;padding:14px 16px;border-radius:14px;
+    border:1px solid var(--card-line);background:rgba(255,255,255,.08);
+    color:var(--ink);font-size:1rem;font-family:inherit;min-height:110px;resize:vertical;
+  }
+  textarea:focus{outline:none;border-color:var(--sel-line);}
+
+  .nav{display:flex;gap:12px;margin-top:18px;}
+  .nav .btn{margin-top:0;}
+  .nav .prev{flex:0 0 38%;}
+  .nav .next{flex:1;}
+
+  .err{color:var(--danger);font-size:.9rem;text-align:center;margin-top:10px;min-height:1.2em;}
+
+  /* result */
+  .res-head{text-align:center;color:var(--ink-dim);font-size:.9rem;letter-spacing:.1em;}
+  .res-sub{text-align:center;color:var(--gold-soft);font-size:1rem;margin:14px 0 6px;}
+  .res-name{
+    text-align:center;font-size:1.5rem;font-weight:700;line-height:1.5;
+    color:#fff;margin:2px 0 18px;
+    text-shadow:0 0 20px rgba(231,198,107,.4);
+  }
+  .res-body{font-size:1rem;line-height:1.9;color:var(--ink);}
+  .divider{height:1px;background:var(--card-line);margin:26px 0;}
+  .exp-title{text-align:center;color:var(--gold-soft);font-weight:700;font-size:1.05rem;margin-bottom:12px;}
+  .exp-body{font-size:.98rem;color:var(--ink);white-space:pre-line;line-height:1.9;}
+  .exp-steps{margin:14px 0 4px;padding-left:0;list-style:none;}
+  .exp-steps li{position:relative;padding-left:26px;margin-bottom:8px;font-size:.96rem;}
+  .exp-steps li::before{content:attr(data-n);position:absolute;left:0;top:0;
+    width:18px;height:18px;border-radius:50%;background:var(--gold);color:#3a2a08;
+    font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+  /* loading */
+  .loading{text-align:center;padding:60px 0;}
+  .spinner{width:46px;height:46px;margin:0 auto 20px;border-radius:50%;
+    border:3px solid rgba(231,198,107,.25);border-top-color:var(--gold);
+    animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .footer-note{text-align:center;color:var(--ink-dim);font-size:.78rem;margin-top:22px;}
+  .restart{text-align:center;margin-top:18px;}
+  .restart a{color:var(--ink-dim);font-size:.85rem;text-decoration:underline;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="wrap">
+
+  <!-- ===== 0. TOP ===== -->
+  <section class="screen active" id="s-top">
+    <div class="top-emblem">🌙</div>
+    <div class="title-main">自分を後回しにしてしまう<br>「選び方の癖」がわかる無料診断</div>
+    <div class="glass">
+      <p class="lead">いつも誰かを優先して、
+気づけば自分のことは後回し。
+
+21の質問から、あなたが無意識に繰り返している
+「選び方の癖」を見つけます。
+
+まずは、今の自分を知るところから。</p>
+      <button class="btn" onclick="go('name')">診断をはじめる</button>
+    </div>
+    <p class="footer-note">所要時間およそ5分／答えに正解・不正解はありません</p>
+  </section>
+
+  <!-- ===== 1. NAME ===== -->
+  <section class="screen" id="s-name">
+    <div class="glass">
+      <h2 style="font-size:1.1rem;margin:0 0 6px;">LINEでお使いのお名前を入力してください</h2>
+      <p class="note">体験会をご希望のとき、LINEのトーク名と照らし合わせてご連絡します。ふだんLINEで表示されているお名前を入れてください。</p>
+      <label class="field" for="username">LINEのお名前</label>
+      <input type="text" id="username" autocomplete="off" placeholder="例：ゆわ" maxlength="30">
+      <div class="err" id="name-err"></div>
+      <button class="btn" onclick="startQuiz()">回答をはじめる</button>
+    </div>
+    <div class="restart"><a onclick="go('top')">← もどる</a></div>
+  </section>
+
+  <!-- ===== 2. QUIZ ===== -->
+  <section class="screen" id="s-quiz">
+    <div class="prog-wrap">
+      <div class="prog-txt" id="prog-txt"></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="glass" id="q-card"></div>
+    <div class="err" id="quiz-err"></div>
+    <div class="nav">
+      <button class="btn ghost prev" id="btn-prev" onclick="prevQ()">もどる</button>
+      <button class="btn next" id="btn-next" onclick="nextQ()">次へ</button>
+    </div>
+  </section>
+
+  <!-- ===== 3. LOADING ===== -->
+  <section class="screen" id="s-loading">
+    <div class="glass loading">
+      <div class="spinner"></div>
+      <p class="lead" style="font-size:1rem;">あなたの「選び方の癖」を<br>読み解いています…</p>
+    </div>
+  </section>
+
+  <!-- ===== 4. RESULT ===== -->
+  <section class="screen" id="s-result">
+    <div class="glass">
+      <p class="res-head">診 断 結 果</p>
+      <p class="res-sub">今のあなたに強く出ている「選び方の癖」は…</p>
+      <p class="res-name" id="res-name"></p>
+      <p class="res-body" id="res-body"></p>
+
+      <div class="divider"></div>
+
+      <p class="exp-title">もっと深く知りたい方へ</p>
+      <div class="exp-body">今回の診断で見えているのは、今のあなたに出やすい「選び方の癖」です。
+
+でも、なぜその選び方を繰り返してしまうのか。
+その奥にある理由は、一人ひとり違います。
+
+選環メソッド体験会では、この診断結果をもとに、あなたの「いつもの選び方」がどこから来ているのかを一緒に見つけていきます。
+
+体験会をご希望の方は、このままLINEのトークに戻って、次の2つを送ってください🍀</div>
+      <ul class="exp-steps">
+        <li data-n="1">体験会希望</li>
+        <li data-n="2">希望日を3つ</li>
+      </ul>
+      <div class="exp-body">診断のときに入れていただいたお名前とLINEのお名前で、こちらから日程をご相談します。</div>
+
+      <button class="btn line" id="btn-line" onclick="openLine()">LINEのトークに戻る</button>
+    </div>
+    <div class="restart"><a onclick="restart()">最初からやり直す</a></div>
+  </section>
+
+</div>
+
+<script>
+/* ======================================================================
+   選環メソッド 無料診断 Ver.2   —  senkan-v2.0
+   フロント完結。保存・メール通知は GAS(doPost) 側で実行。
+   ▼ 差し替え設定値（16章）
+====================================================================== */
+const CONFIG = {
+  GAS_URL:  "__GAS_URL__",      // ← GASウェブアプリのURL
+  LINE_URL: "__LINE_URL__",     // ← 公式LINE 友だち追加/遷移URL
+  APP_VERSION: "senkan-v2.0"
+};
+
+/* ---------- 設問データ（前版から一字一句変更なし） ---------- */
+const QUESTIONS = [
+  {q:"人から「それ、すごいね」「あなたの強みだね」と褒められたとき、あなたに一番近いのは？",
+   o:["「ありがとう」と受け取り、自分でも強みだと思える","嬉しいけれど「そんなにすごいことかな？」と思う","「私よりできる人はいっぱいいる」と思う","自分では普通にやっているので、なぜ褒められるのかよく分からない"]},
+  {q:"「これ、やってみたい！」と思うことを見つけた直後、一番近いのは？",
+   o:["まず小さくでも試してみる","もう少し調べたり準備してから動く","周りの人がどう思うか、反応が気になる","お金や失敗のことを考えて、一度止まる"]},
+  {q:"一緒にいる人の機嫌が悪そうなとき、一番近いのは？",
+   o:["相手の機嫌と自分は別だと思える","少し気になるが、しばらくすると忘れる","「何かあったかな」と相手のことが気になる","「私、何かしたかな」と自分のことまで振り返ってしまう"]},
+  {q:"まだ実現方法が分からない「こうなったらいいな」という未来について、一番近いのは？",
+   o:["方法が分からなくても、まずできることを探す","想像するとワクワクするが、具体的にはまだ分からない","「現実的に難しいかも」と考える","そもそも自分がどうなりたいのか、はっきりしない"]},
+  {q:"欲しいものや、やってみたいことに少し大きなお金が必要なとき、一番近いのは？",
+   o:["必要性と金額を考えて、納得できれば使う","払えるとしても、かなり考えてから決める","「今使って大丈夫かな」という不安が先に出る","自分のためなら、なくても困らない理由を探して諦めることが多い"]},
+  {q:"大切なことを決めるとき、一番近いのは？",
+   o:["人の意見も聞くが、最後は自分で決める","一度決めても「本当にこれでいい？」と考え直す","信頼できる人に「どう思う？」と確認したくなる","できるだけ失敗しない正解を見つけてから決めたい"]},
+  {q:"誰かから頼みごとをされたけれど、自分にも余裕がない。そんなときは？",
+   o:["難しいときは断る","内容や相手によって決める","断ったあとの相手の反応が気になって引き受けることがある","自分が少し無理をすれば済むなら、引き受けることが多い"]},
+  {q:"何かに挑戦して、思うような結果が出なかったときは？",
+   o:["やり方を変えてもう一度試してみる","いったん落ち込むが、原因を考える","「もっとできる人ならうまくいったかも」と思う","「やっぱり私には向いていないのかも」と思う"]},
+  {q:"楽しみにしていた予定の日が近づいて、不安になってきたら？",
+   o:["不安はあっても予定どおりやってみる","誰かに話したり準備したりして気持ちを落ち着かせる","不安が強いと、行くかどうか迷い始める","「今回はやめておこう」と取りやめることがある"]},
+  {q:"新しいことを始めるとき、一番安心できるのは？",
+   o:["まずやってみて、必要なことを後から覚える","最低限の情報が分かってから始める","かなり準備して「これなら大丈夫」と思えてから始める","まだ足りない気がして、準備が長くなることがある"]},
+  {q:"自分のために1万円使う場合と、大切な人のために1万円使う場合では？",
+   o:["どちらも必要なら同じように使える","少しだけ、大切な人のための方が使いやすい","大切な人のためなら使えるが、自分のためだとかなり迷う","自分のために1万円使うことには、もったいなさや罪悪感を感じる"]},
+  {q:"気になる選択肢が3つあって、どれも良さそう。そんなときは？",
+   o:["今の自分に一番合うものを選ぶ","比較してから、一つに決める","口コミや情報をかなり調べる","「もっといいものがあるかも」と探しているうちに決められなくなる"]},
+  {q:"誰かから悩みを打ち明けられたとき、一番近いのは？",
+   o:["話を聞きながらも、相手の問題として考えられる","相手が少しでも楽になれるよう力になりたいと思う","その後も「大丈夫だったかな」と気になる","自分まで同じように苦しくなることがある"]},
+  {q:"「こんな暮らしがしたい」「こんな仕事がしたい」と思う未来については？",
+   o:["そこへ近づくために、今やることがある程度分かっている","やりたい未来は見えるが、順番がまだ分からない","いくつか思い浮かぶが、どれが本当に望んでいるものか迷う","今のことで精いっぱいで、未来を考えること自体が少ない"]},
+  {q:"何かがうまくいったとき、一番近いのは？",
+   o:["「私、よくやった」と思える","自分も頑張ったし、周りにも助けてもらったと思う","運やタイミングが良かったと思うことが多い","「これくらい普通」と思って、成果としてあまり数えない"]},
+  {q:"予定していなかった大きめの出費があった後は？",
+   o:["必要な出費なら受け入れて、その後も普段どおり","少し節約してバランスを戻そうとする","しばらくお金を使うことに慎重になる","必要なものまで「今はやめておこう」と思うことがある"]},
+  {q:"急に面白そうなことを見つけたときは？",
+   o:["かなりの確率で試す","少し調べて、良さそうなら試す","興味はあるけれど、今やっていることとの兼ね合いを考える","興味を持って調べるものの、実際には始めないことも多い"]},
+  {q:"自分と大切な人の希望がぶつかったとき、一番近いのは？",
+   o:["お互いが納得できる方法を話し合う","できるだけ相手も自分も大切にできる方法を探す","相手が喜ぶなら、自分が譲ることが多い","自分の希望を言うことで関係が悪くなるくらいなら、譲る"]},
+  {q:"「本当はこうしたい」と思っていることについて、一番近いのは？",
+   o:["すでに何か行動している","小さく始められる方法を考えている","やりたいけれど、今は難しい理由がいくつかある","いつかできたらと思いながら、長い間そのままになっている"]},
+  {q:"将来につながると思えるサービス・学び・経験にお金を使うときは？",
+   o:["自分に必要だと思えば、予算を考えて決められる","金額に見合うか何度も確認する","払える金額でも「本当に自分に使っていい？」と迷う","興味があっても、お金が減ることを考えると見送ることが多い"]},
+  {q:"もし「失敗しても誰にも責められない」「お金の心配もない」としたら、今よりやってみたいことはありますか？",
+   o:["はっきりある。すぐにでもやってみたい","いくつか思い浮かぶ","何となくあるけれど、まだ言葉にはできない","それでも、特に思い浮かばない"]}
+];
+
+/* ---------- テーマ定義（6章）---------- */
+// 対象質問は 1始まり。内部でindex(0始まり)に変換して使用。
+const THEMES = {
+  SELF:     {name:"自分を小さく扱う選び方",           qs:[1,8,15]},
+  EMOTION:  {name:"相手の感情を背負う選び方",         qs:[3,9,13]},
+  ACTION:   {name:"動く前に止まる選び方",             qs:[2,10,17,19]},
+  RELATION: {name:"自分より相手を優先する選び方",     qs:[7,18]},
+  SAFETY:   {name:"安心のために自分を後回しにする選び方", qs:[5,11,16,20]},
+  DECISION: {name:"正解を探し続ける選び方",           qs:[6,12]},
+  FUTURE:   {name:"自分の望みを後回しにする選び方",   qs:[4,14,21]}
+};
+const THEME_ORDER = ["SELF","EMOTION","ACTION","RELATION","SAFETY","DECISION","FUTURE"];
+
+/* ---------- 固定 結果文（7-1）---------- */
+const RESULT_TEXT = {
+  SELF:"人から認められても『まだまだ』『これくらい普通』と、自分の頑張りや力を小さく数えやすいようです。失敗したときには自分の力そのものを疑いやすく、気づかないうちに\"自分より誰か\"を基準に選んでいることがあります。",
+  EMOTION:"相手の機嫌や気持ちを敏感に感じ取り、『大丈夫かな』『私が何かしたかな』と自分のことのように受け取りやすいようです。そのやさしさゆえに、自分の気持ちや予定まで相手に合わせてしまうことがあります。",
+  ACTION:"やってみたい気持ちはあるのに、準備・失敗・周囲の反応・今の状況を考えるうちに、一歩目が後ろへずれやすいようです。『もう少し整ってから』が続くことで、本当は選びたかったものを後回しにすることがあります。",
+  RELATION:"頼まれたときや意見がぶつかったとき、自分の希望より相手の気持ちや関係を守る方を選びやすいようです。相手を大切にできる力がある一方で、自分の希望が選択肢から抜け落ちてしまうことがあります。",
+  SAFETY:"お金や将来の安心を大切にするあまり、自分に必要なものややってみたいことまで『今はやめておこう』と後回しにしやすいようです。守ることを優先するうちに、自分のために使うことへ罪悪感や不安が混ざることがあります。",
+  DECISION:"決める前にしっかり考えられる一方で、『本当にこれでいい？』『もっと良い答えがあるかも』と正解探しが長くなりやすいようです。自分の感覚より、情報や誰かの意見を先に置いてしまうことがあります。",
+  FUTURE:"毎日のことや現実的な条件を優先するうちに、『私は本当はどうしたい？』を考える時間そのものが後回しになりやすいようです。望みがないのではなく、望みを見にいく余白が少なくなっている可能性があります。"
+};
+const RESULT_LOW = "今は自分を後回しにする癖が、強くは出ていない可能性があります。それでも、日々のちょっとした選択の中に、あなたらしい「選び方」のヒントは隠れています。";
+
+/* ---------- 状態 ---------- */
+const FREE_INDEX = QUESTIONS.length; // 自由記述は最後のステップ
+const TOTAL_STEPS = QUESTIONS.length + 1;
+let state = {
+  name:"",
+  answers:new Array(QUESTIONS.length).fill(null), // 0..3 (A..D)
+  free:"",
+  step:0,
+  submitting:false,
+  done:false
+};
+
+/* ---------- 画面遷移 ---------- */
+function go(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("s-"+id).classList.add("active");
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* ---------- 名前 ---------- */
+function startQuiz(){
+  const v = document.getElementById("username").value.trim();
+  const err = document.getElementById("name-err");
+  if(!v){ err.textContent="お名前を入力してください。"; return; }
+  err.textContent="";
+  state.name = v;
+  state.step = 0;
+  go("quiz");
+  renderStep();
+}
+
+/* ---------- 設問描画 ---------- */
+function renderStep(){
+  document.getElementById("quiz-err").textContent="";
+  const card = document.getElementById("q-card");
+  const s = state.step;
+  // progress
+  document.getElementById("prog-txt").textContent =
+    (s < QUESTIONS.length) ? `質問 ${s+1} / ${QUESTIONS.length}` : "最後にひとつだけ（任意）";
+  document.getElementById("prog-fill").style.width = ((s+1)/TOTAL_STEPS*100)+"%";
+
+  if(s < QUESTIONS.length){
+    const Q = QUESTIONS[s];
+    const letters=["A","B","C","D"];
+    let html = `<div class="q-num">Q${s+1}</div><div class="q-text">${Q.q}</div>`;
+    Q.o.forEach((opt,i)=>{
+      const sel = state.answers[s]===i ? " sel":"";
+      html += `<button class="opt${sel}" onclick="choose(${i})"><span class="mark"></span>${opt}</button>`;
+    });
+    card.innerHTML = html;
+    const nextBtn = document.getElementById("btn-next");
+    nextBtn.textContent = "次へ";
+  } else {
+    // free text
+    card.innerHTML = `
+      <div class="q-num">最後に</div>
+      <div class="q-text">今の生活・仕事・自分自身について、「ひとつだけ変えられる」としたら、何を変えたいですか？</div>
+      <p class="note">「特にない」「わからない」でも大丈夫です。空欄のままでも進めます。</p>
+      <textarea id="free-input" placeholder="ここに自由にお書きください（任意）">${escapeHtml(state.free)}</textarea>`;
+    document.getElementById("btn-next").textContent = "診断結果を見る";
+  }
+  // prev button
+  document.getElementById("btn-prev").style.visibility = (s===0)?"hidden":"visible";
+}
+
+function choose(i){
+  state.answers[state.step]=i;
+  // 視覚更新（選択を明示。自動送りはしない＝ユーザーが「次へ」を押す）
+  document.querySelectorAll("#q-card .opt").forEach((el,idx)=>{
+    el.classList.toggle("sel", idx===i);
+  });
+  document.getElementById("quiz-err").textContent="";
+}
+
+function prevQ(){
+  if(state.step===FREE_INDEX){ saveFree(); }
+  if(state.step>0){ state.step--; renderStep(); }
+}
+
+function nextQ(){
+  const s=state.step;
+  if(s < QUESTIONS.length){
+    if(state.answers[s]===null){
+      document.getElementById("quiz-err").textContent="選択肢をひとつ選んでください。";
+      return;
+    }
+    state.step++;
+    renderStep();
+  } else {
+    // free step -> submit
+    saveFree();
+    submit();
+  }
+}
+
+function saveFree(){
+  const ta=document.getElementById("free-input");
+  if(ta) state.free = ta.value.trim();
+}
+
+/* ---------- 採点 ---------- */
+function grade(){
+  // 各回答 0..3 (=基本点 A0 B1 C2 D3)
+  const raw={}, norm={};
+  THEME_ORDER.forEach(k=>{
+    const qs = THEMES[k].qs;
+    let sum=0;
+    qs.forEach(qn=>{ sum += state.answers[qn-1]; });
+    raw[k]=sum;
+    norm[k]= Math.round( (sum/(qs.length*3))*100 *10)/10; // 小数1位
+  });
+  // 順位決定（同点タイブレーク：該当テーマの後半質問合計→最後回答質問の強度）
+  const ranked = [...THEME_ORDER].sort((a,b)=>{
+    if(norm[b]!==norm[a]) return norm[b]-norm[a];
+    // tie-break1: 後半質問（質問番号が大きい側）の合計
+    const lateSum = k=>{
+      const qs=[...THEMES[k].qs].sort((x,y)=>y-x);
+      const half=qs.slice(0,Math.ceil(qs.length/2));
+      return half.reduce((t,qn)=>t+state.answers[qn-1],0);
+    };
+    const la=lateSum(a), lb=lateSum(b);
+    if(lb!==la) return lb-la;
+    // tie-break2: そのテーマ内で最も質問番号が大きい問の強度
+    const lastStrength = k=>{
+      const maxQ=Math.max(...THEMES[k].qs);
+      return state.answers[maxQ-1];
+    };
+    return lastStrength(b)-lastStrength(a);
+  });
+
+  const main = ranked[0];
+  const second = ranked[1];
+  const allLow = THEME_ORDER.every(k=>norm[k] < 34); // 全テーマ低い（≒B以下平均）
+  const tieFlag = norm[ranked[0]]===norm[ranked[1]];
+
+  return {raw,norm,ranked,main,second,allLow,tieFlag};
+}
+
+/* ---------- 送信（診断結果を見る）---------- */
+async function submit(){
+  if(state.submitting || state.done) return;
+  state.submitting = true;
+  document.getElementById("btn-next").disabled = true;
+  document.getElementById("btn-prev").disabled = true;
+
+  const g = grade();
+  go("loading");
+
+  const letters=["A","B","C","D"];
+  const payload = {
+    version: CONFIG.APP_VERSION,
+    record_id: makeId(),
+    timestamp: new Date().toISOString(),
+    name: state.name,
+    answers: state.answers.map((a,i)=>({
+      q: i+1,
+      choice: letters[a],
+      text: QUESTIONS[i].o[a]
+    })),
+    free: state.free,
+    scores: g.norm,
+    main: g.main,
+    main_name: THEMES[g.main].name,
+    second: g.second,
+    second_name: THEMES[g.second].name,
+    tie: g.tieFlag,
+    all_low: g.allLow
+  };
+
+  // 保存＋メール（GAS）。成功時のみ結果表示。
+  let ok=false;
+  if(CONFIG.GAS_URL && CONFIG.GAS_URL.indexOf("__")!==0){
+    ok = await postToGAS(payload);
+  } else {
+    // 設定前のプレビュー用フォールバック（本番では必ずGAS_URLを設定）
+    await sleep(900);
+    ok=true;
+  }
+
+  state.submitting=false;
+  if(ok){
+    state.done=true;
+    showResult(g);
+  } else {
+    // 失敗：再試行できるよう戻す
+    document.getElementById("btn-next").disabled=false;
+    document.getElementById("btn-prev").disabled=false;
+    go("quiz");
+    renderStep();
+    document.getElementById("quiz-err").textContent =
+      "診断結果の保存に失敗しました。通信環境をご確認のうえ、もう一度お試しください。";
+  }
+}
+
+async function postToGAS(payload){
+  try{
+    // no-corsだとレスポンス確認不可のため、text/plainで通常POST
+    const res = await fetch(CONFIG.GAS_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) return false;
+    const data = await res.json().catch(()=>({result:"ok"}));
+    return data.result!=="error";
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+/* ---------- 結果表示 ---------- */
+function showResult(g){
+  const nameEl=document.getElementById("res-name");
+  const bodyEl=document.getElementById("res-body");
+  if(g.allLow){
+    nameEl.textContent = "今は、大きな癖は目立ちません";
+    bodyEl.textContent = RESULT_LOW;
+  } else {
+    nameEl.textContent = THEMES[g.main].name;
+    bodyEl.textContent = RESULT_TEXT[g.main];
+  }
+  go("result");
+}
+
+/* ---------- LINE ---------- */
+function openLine(){
+  if(CONFIG.LINE_URL && CONFIG.LINE_URL.indexOf("__")!==0){
+    window.open(CONFIG.LINE_URL, "_blank");
+  } else {
+    alert("LINEのリンクが設定されていません（LINE_URLを設定してください）。");
+  }
+}
+
+/* ---------- やり直し ---------- */
+function restart(){
+  state = {name:"",answers:new Array(QUESTIONS.length).fill(null),free:"",step:0,submitting:false,done:false};
+  document.getElementById("username").value="";
+  document.getElementById("btn-next").disabled=false;
+  document.getElementById("btn-prev").disabled=false;
+  go("top");
+}
+
+/* ---------- utils ---------- */
+function makeId(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  return `SK${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}${Math.floor(Math.random()*900+100)}`;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function escapeHtml(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+/* ---------- 星 ---------- */
+(function(){
+  const box=document.getElementById("stars");
+  let h="";
+  for(let i=0;i<50;i++){
+    const s=Math.random()*2+1;
+    h+=`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;width:${s}px;height:${s}px;animation-delay:${Math.random()*4}s"></i>`;
+  }
+  box.innerHTML=h;
+})();
+</script>
+</body>
+</html>
